@@ -9,7 +9,7 @@ Technologies Used
 License 
 Prerequisites
 Before you begin, ensure you have the following installed: 
-Java Development Kit (JDK) 17+: The application is built and run with JDK 17 or newer.
+Java Development Kit (JDK) 21+: The application is built and run with JDK 17 or newer.
 Apache Maven 3.6+: Used for building and managing project dependencies.
 Getting Started
 1. Clone the repository
