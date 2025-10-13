@@ -1,0 +1,193 @@
+# SDK Manager Configuration
+# Java and Maven Version Management
+
+## Java Versions
+# Java 25 (Latest LTS Preview)
+export JAVA_25_HOME="/usr/lib/jvm/java-25-openjdk"
+export JAVA_21_HOME="/usr/lib/jvm/java-21-openjdk"
+export JAVA_17_HOME="/usr/lib/jvm/java-17-openjdk"
+export JAVA_11_HOME="/usr/lib/jvm/java-11-openjdk"
+export JAVA_8_HOME="/usr/lib/jvm/java-8-openjdk"
+
+# Default Java Version
+export JAVA_HOME=$JAVA_25_HOME
+export PATH=$JAVA_HOME/bin:$PATH
+
+## Maven Versions
+# Maven 3.9.x (Compatible with Java 25)
+export MAVEN_3_9_HOME="/opt/maven/apache-maven-3.9.6"
+export MAVEN_3_8_HOME="/opt/maven/apache-maven-3.8.8"
+export MAVEN_3_6_HOME="/opt/maven/apache-maven-3.6.3"
+
+# Default Maven Version
+export MAVEN_HOME=$MAVEN_3_9_HOME
+export PATH=$MAVEN_HOME/bin:$PATH
+
+## SDK Management Functions
+
+# Switch Java Version
+switch_java() {
+    case $1 in
+        "25")
+            export JAVA_HOME=$JAVA_25_HOME
+            echo "Switched to Java 25"
+            ;;
+        "21")
+            export JAVA_HOME=$JAVA_21_HOME
+            echo "Switched to Java 21"
+            ;;
+        "17")
+            export JAVA_HOME=$JAVA_17_HOME
+            echo "Switched to Java 17"
+            ;;
+        "11")
+            export JAVA_HOME=$JAVA_11_HOME
+            echo "Switched to Java 11"
+            ;;
+        "8")
+            export JAVA_HOME=$JAVA_8_HOME
+            echo "Switched to Java 8"
+            ;;
+        *)
+            echo "Usage: switch_java [8|11|17|21|25]"
+            return 1
+            ;;
+    esac
+    export PATH=$JAVA_HOME/bin:${PATH#*/bin:}
+    java -version
+}
+
+# Switch Maven Version
+switch_maven() {
+    case $1 in
+        "3.9")
+            export MAVEN_HOME=$MAVEN_3_9_HOME
+            echo "Switched to Maven 3.9.x"
+            ;;
+        "3.8")
+            export MAVEN_HOME=$MAVEN_3_8_HOME
+            echo "Switched to Maven 3.8.x"
+            ;;
+        "3.6")
+            export MAVEN_HOME=$MAVEN_3_6_HOME
+            echo "Switched to Maven 3.6.x"
+            ;;
+        *)
+            echo "Usage: switch_maven [3.6|3.8|3.9]"
+            return 1
+            ;;
+    esac
+    export PATH=$MAVEN_HOME/bin:${PATH#*/bin:}
+    mvn -version
+}
+
+# Show Current Versions
+show_versions() {
+    echo "=== Current SDK Versions ==="
+    echo "Java Version:"
+    java -version
+    echo ""
+    echo "Maven Version:"
+    mvn -version
+    echo ""
+    echo "JAVA_HOME: $JAVA_HOME"
+    echo "MAVEN_HOME: $MAVEN_HOME"
+}
+
+# Java 25 Specific Configuration
+configure_java25() {
+    echo "Configuring Java 25 specific settings..."
+
+    # Enable preview features for Java 25
+    export MAVEN_OPTS="--enable-preview --add-modules jdk.incubator.vector"
+
+    # Java 25 JVM arguments for better performance
+    export JAVA_TOOL_OPTIONS="-XX:+UseG1GC -XX:+UseStringDeduplication -Xms512m -Xmx2g"
+
+    echo "Java 25 configuration applied with preview features enabled"
+    echo "MAVEN_OPTS: $MAVEN_OPTS"
+    echo "JAVA_TOOL_OPTIONS: $JAVA_TOOL_OPTIONS"
+}
+
+# Maven Dependencies for Java 25
+maven_java25_config() {
+    cat << 'EOF'
+<!-- Maven Configuration for Java 25 -->
+<properties>
+    <maven.compiler.source>25</maven.compiler.source>
+    <maven.compiler.target>25</maven.compiler.target>
+    <maven.compiler.release>25</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+</properties>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.11.0</version>
+            <configuration>
+                <release>25</release>
+                <compilerArgs>
+                    <arg>--enable-preview</arg>
+                </compilerArgs>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.2.2</version>
+            <configuration>
+                <argLine>--enable-preview</argLine>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+EOF
+}
+
+# Installation Commands
+install_java25() {
+    echo "Installation commands for Java 25:"
+    echo ""
+    echo "# Ubuntu/Debian:"
+    echo "sudo apt update"
+    echo "sudo apt install openjdk-25-jdk"
+    echo ""
+    echo "# macOS (using Homebrew):"
+    echo "brew install openjdk@25"
+    echo ""
+    echo "# Manual download:"
+    echo "# Download from: https://jdk.java.net/25/"
+}
+
+install_maven39() {
+    echo "Installation commands for Maven 3.9.x:"
+    echo ""
+    echo "# Ubuntu/Debian:"
+    echo "wget https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz"
+    echo "sudo tar -xzf apache-maven-3.9.6-bin.tar.gz -C /opt/maven/"
+    echo ""
+    echo "# macOS (using Homebrew):"
+    echo "brew install maven"
+}
+
+# Aliases for quick access
+alias java25="switch_java 25"
+alias java21="switch_java 21"
+alias java17="switch_java 17"
+alias java11="switch_java 11"
+alias java8="switch_java 8"
+alias maven39="switch_maven 3.9"
+alias maven38="switch_maven 3.8"
+alias versions="show_versions"
+alias j25config="configure_java25"
+alias mvnj25="maven_java25_config"
+
+# Auto-configure Java 25 on load
+configure_java25
+
+echo "SDK Manager loaded successfully!"
+echo "Available commands: java25, java21, java17, java11, java8, maven39, maven38, versions, j25config, mvnj25"
+echo "Current configuration:"
+show_versions
